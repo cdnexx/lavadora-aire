@@ -10,7 +10,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -148,7 +147,6 @@ class Ui_MainWindow(object):
         self.tds_entry.setToolTip(_translate("MainWindow", "<html><head/><body><p>Lectura del total de sólidos disueltos en el agua</p></body></html>"))
         self.water_flux_entry.setToolTip(_translate("MainWindow", "<html><head/><body><p>Lectura de flujo de agua</p></body></html>"))
         self.message_entry.setToolTip(_translate("MainWindow", "<html><head/><body><p>Mensajes de información relevante</p></body></html>"))
-
 
 if __name__ == "__main__":
     import sys
