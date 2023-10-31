@@ -1,7 +1,6 @@
 from flask import Flask, json, request
+from flask_cors import CORS
 import threading, random, time
-
-companies = [{"id": 1, "name": "Company1"}, {"id": 2, "name": "Company2"}]
 
 expected_air_flow = 10
 air_flow, pm25, pm10 = 0, 0, 0
@@ -16,7 +15,7 @@ def random_air_data():
         air_flow = round(random.uniform(expected_air_flow*0.7, expected_air_flow*1.2), 2)
         pm25 = round(random.uniform(expected_air_flow, expected_air_flow*1.5), 2)
         pm10 = round(random.uniform(expected_air_flow, expected_air_flow*1.8), 2)
-        time.sleep(0.5)
+        time.sleep(1)
 
 def random_water_data():
     global expected_water_flow, water_flow, tds
@@ -24,21 +23,15 @@ def random_water_data():
     while True:
         water_flow = round(random.uniform(expected_water_flow*0.7, expected_water_flow*1.2), 2)
         tds = round(random.uniform(expected_water_flow*15, expected_water_flow*18), 2)
-        time.sleep(0.5)
+        time.sleep(1)
 
 
 api =  Flask(__name__)
+CORS(api)
 
 @api.route('/api/data', methods=['GET'])
 def get_data():
     global expected_air_flow, expected_water_flow
-    air_query = request.args.get('expected_air_flow')
-    if air_query:
-        expected_air_flow = int(air_query)
-    water_query = request.args.get('expected_water_flow')
-    if water_query:
-        expected_water_flow = int(water_query)
-
     data = {
         'air_flow': air_flow,
         'pm25': pm25,
@@ -58,6 +51,24 @@ def get_control_data():
         'current_water_flow': expected_water_flow
     }
     return json.dumps(data)
+
+@api.route('/api/control', methods=['POST'])
+def set_control_params():
+    global expected_air_flow, expected_water_flow
+
+    data = request.json
+    try:
+        expected_air_flow = int(data['expected_air_flow'])
+    except:
+        pass
+
+    try:
+        expected_water_flow = int(data['expected_water_flow'])
+    except:
+        pass
+
+    response = {"message": "Datos recibidos con éxito!"}
+    return json.dumps(response), 201
 
 if __name__ == '__main__':
     air_data_thread = threading.Thread(target=random_air_data)
