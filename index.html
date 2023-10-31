@@ -1,0 +1,161 @@
+<html>
+    <head>
+        <title>Lavadora de aire</title>
+    </head>
+    <body>
+        <nav>
+            <h1>Lavadora de aire</h1>
+        </nav>
+        <div>
+            <h2>Control de entradas</h2>
+            <label for="air_flow">Aire [L/min]</label>
+            <input name="air_flow" id="input_air" type="number" value="0" min="0" max="30">
+            <input name="air_flow" id="range_air" type="range" value="0" min="0" max="30">
+
+            <label for="water_flow">Agua [L/min]</label>
+            <input name="water_flow" id="input_water" type="number" value="0" min="0" max="30">
+            <input name="water_flow" id="range_water" type="range" value="0" min="0" max="30">
+            <hr />
+            <table>
+                <tr>
+                    <th>Aire</th>
+                </tr>
+                <tr>
+                    <th>Flujo [L/min]</th>
+                    <th>PM2.5 [µg/m3]</th>
+                    <th>PM10 [µg/m3]</th>
+                </tr>
+                <tr>
+                    <td id="airFlow">0</td>
+                    <td id="pm25">0</td>
+                    <td id="pm10">0</td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <th>Agua</th>
+                </tr>
+                <tr>
+                    <th>Flujo [L/min]</th>
+                    <th>TDS [ppm]</th>
+                </tr>
+                <tr>
+                    <td id="waterFlow">0</td>
+                    <td id="tds">0</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+    <script>
+        var airInputElement = document.getElementById("input_air")
+        airInputElement.addEventListener("input", (e) => {
+            var flowValue = e.target.value
+            airRangeElement.value = flowValue
+            setAirFlow(flowValue)
+            // console.log(flowValue);
+        })
+
+        var airRangeElement = document.getElementById("range_air")
+        airRangeElement.addEventListener("input", (e) => {
+            var flowValue = e.target.value
+            airInputElement.value = flowValue
+            setAirFlow(flowValue)
+            // console.log(flowValue);
+
+        })
+
+        var waterInputElement = document.getElementById("input_water")
+        waterInputElement.addEventListener("input", (e) => {
+            var flowValue = e.target.value
+            waterRangeElement.value = flowValue
+            setWaterFlow(flowValue)
+            // console.log(flowValue);
+        })
+
+        var waterRangeElement = document.getElementById("range_water")
+        waterRangeElement.addEventListener("input", (e) => {
+            var flowValue = e.target.value
+            waterInputElement.value = flowValue
+            setWaterFlow(flowValue)
+            // console.log(flowValue);
+
+        })
+
+        function setAirFlow(value) {
+            var data = {
+                expected_air_flow: value
+            }
+
+            var config = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }
+
+            fetch('http://192.168.1.103:5000/api/control', config)
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data);
+                })
+                .catch(error => {console.error(error);})
+        }
+
+        function setWaterFlow(value) {
+            var data = {
+                expected_water_flow: value
+            }
+
+            var config = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }
+
+            fetch('http://192.168.1.103:5000/api/control', config)
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data);
+                })
+                .catch(error => {console.error(error);})
+        }
+
+        function fetchData() {
+            fetch('http://192.168.1.103:5000/api/data')
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data)
+                    var airFlow = document.getElementById("airFlow")
+                    var pm25 = document.getElementById("pm25")
+                    var pm10 = document.getElementById("pm10")
+                    var waterFlow = document.getElementById("waterFlow")
+                    var tds = document.getElementById("tds"
+                    )
+
+                    var airInput = document.getElementById("input_air")
+                    var airRange = document.getElementById("range_air")
+                    var waterInput = document.getElementById("input_water")
+                    var waterRange = document.getElementById("range_water")
+
+                    airFlow.textContent = data['air_flow']
+                    pm25.textContent = data['pm25']
+                    pm10.textContent = data ['pm10']
+                    waterFlow.textContent = data['water_flow']
+                    tds.textContent = data['tds']
+
+                    airInput.value = data['expected_air']
+                    airRange.value = data['expected_air']
+                    waterInput.value = data['expected_water']
+                    waterRange.value = data['expected_water']
+                })
+                .catch(error => {console.error(error)})
+        }
+        window.addEventListener('load', () => {
+            fetchData();
+            setInterval(fetchData, 2000)
+        })
+    </script>
+</html>
