@@ -163,6 +163,8 @@
 
     </style>
     <script>
+        const API_URL = 'http://192.168.1.141:5000/api/' 
+
         var airInputElement = document.getElementById("input_air")
         airInputElement.addEventListener("input", (e) => {
             var flowValue = e.target.value
@@ -210,7 +212,7 @@
                 body: JSON.stringify(data)
             }
 
-            fetch('http://localhost:5000/api/control', config)
+            fetch(`${API_URL}control`, config)
                 .then(response => response.json())
                 .then(data => {
                     // console.log(data);
@@ -231,7 +233,7 @@
                 body: JSON.stringify(data)
             }
 
-            fetch('http://localhost:5000/api/control', config)
+            fetch(`${API_URL}control`, config)
                 .then(response => response.json())
                 .then(data => {
                     // console.log(data);
@@ -240,7 +242,7 @@
         }
 
         function fetchData() {
-            fetch('http://localhost:5000/api/data')
+            fetch(`${API_URL}data`)
                 .then(response => response.json())
                 .then(data => {
                     // console.log(data)
