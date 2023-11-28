@@ -1,13 +1,15 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from main_ui import Ui_MainWindow 
+from main_ui import Ui_MainWindow
 import typing
 import threading
 import time
 import random
 import requests
 
-air_flow, pm25, pm10 = 0,0,0
+API_URL = 'http://192.168.137.222:5000/api'
+air_flow, pm25, pm10 = 0, 0, 0
 water_flow, tds = 0, 0
+
 
 def input_changed(value: int, fluid_type: str, change: str):
     """
@@ -26,9 +28,10 @@ def input_changed(value: int, fluid_type: str, change: str):
             update = ui.water_control_slider
     update.setValue(int(value))
 
+
 def receive_data():
     global air_flow, pm25, pm10, water_flow, tds
-    url = 'http://192.168.1.141:5000/api/data'
+    url = f"{API_URL}/data"
     while True:
         response = requests.get(url)
         if response.status_code == 200:
@@ -38,7 +41,7 @@ def receive_data():
             pm10 = data['pm10']
             water_flow = data['water_flow']
             tds = data['tds']
-            
+
 
 def update_data():
     ui.air_flux_entry.setText(str(air_flow))
@@ -47,8 +50,10 @@ def update_data():
     ui.water_flux_entry.setText(str(water_flow))
     ui.tds_entry.setText(str(tds))
 
+
 class MiWidget(QtCore.QObject):
     signal = QtCore.pyqtSignal(str)
+
 
 if __name__ == "__main__":
     import sys
@@ -65,11 +70,15 @@ if __name__ == "__main__":
 
     # app.aboutToQuit.connect(close)
 
-    ui.air_control_slider.valueChanged['int'].connect(lambda value: input_changed(value, "air", "input"))
-    ui.air_control_input.valueChanged['QString'].connect(lambda value: input_changed(value, "air", "slider"))
-    ui.water_control_slider.valueChanged['int'].connect(lambda value: input_changed(value, "water", "input"))
-    ui.water_control_input.valueChanged['QString'].connect(lambda value: input_changed(value, "water", "slider"))
-    
+    ui.air_control_slider.valueChanged['int'].connect(
+        lambda value: input_changed(value, "air", "input"))
+    ui.air_control_input.valueChanged['QString'].connect(
+        lambda value: input_changed(value, "air", "slider"))
+    ui.water_control_slider.valueChanged['int'].connect(
+        lambda value: input_changed(value, "water", "input"))
+    ui.water_control_input.valueChanged['QString'].connect(
+        lambda value: input_changed(value, "water", "slider"))
+
     ui.message_entry.setText("OK!")
 
     receive_data_thread.daemon = True
