@@ -28,7 +28,7 @@ def input_changed(value: int, fluid_type: str, change: str):
 
 def receive_data():
     global air_flow, pm25, pm10, water_flow, tds
-    url = 'http://localhost:5000/api/data'
+    url = 'http://192.168.1.141:5000/api/data'
     while True:
         response = requests.get(url)
         if response.status_code == 200:
