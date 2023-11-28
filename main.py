@@ -6,7 +6,7 @@ import time
 import random
 import requests
 
-API_URL = 'http://192.168.137.222:5000/api'
+API_URL = 'http://192.168.1.141:5000/api'
 air_flow, pm25, pm10 = 0, 0, 0
 water_flow, tds = 0, 0
 
